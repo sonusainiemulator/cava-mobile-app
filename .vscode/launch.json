@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "tequila_app",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "tequila_app (Advanced Debug)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=ADVANCED_DEBUG=true"
+            ]
+        }
+    ]
+}

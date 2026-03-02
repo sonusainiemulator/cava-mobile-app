@@ -1,0 +1,8 @@
+{
+  "name": "Marcas",
+  "description": "Módulo de gestión de marcas de tequila usando la tabla existente tblmarcas, con soporte opcional de imagen y edición.",
+  "author": "EREISE",
+  "version": "1.0.6",
+  "requires": "3.3.*",
+  "compatible_php_version": "7.4+"
+}

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DEVELOPER GUIDE</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            color: #333;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; margin-top: 30px; }
+        h3 { color: #34495e; margin-top: 25px; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        pre code {
+            background: none;
+            color: #ecf0f1;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin-left: 0;
+            color: #666;
+            font-style: italic;
+        }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        @media print {
+            body { padding: 20px; }
+            h1, h2, h3 { page-break-after: avoid; }
+            pre, blockquote { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<h1>Tequila App - Developer Guide</h1>
+
+<h2>Table of Contents</h2>
+
+<ol>
+<li><a href="#development-environment-setup">Development Environment Setup</a></li>
+<li><a href="#project-architecture">Project Architecture</a></li>
+<li><a href="#code-standards">Code Standards</a></li>
+<li><a href="#database-management">Database Management</a></li>
+<li><a href="#adding-new-features">Adding New Features</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#building--deployment">Building &amp; Deployment</a></li>
+<li><a href="#api-integration-guide">API Integration Guide</a></li>
+</ol>
+
+<hr />
+
+<h2>Development Environment Setup</h2>
+
+<h3>Required Tools</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Flutter SDK</span>
+flutter<span class="w"> </span>--version<span class="w">  </span><span class="c1"># Should be 3.x or higher</span>
+
+<span class="c1"># IDE (Choose one)</span>
+-<span class="w"> </span>VS<span class="w"> </span>Code<span class="w"> </span>with<span class="w"> </span>Flutter<span class="w"> </span>extension
+-<span class="w"> </span>Android<span class="w"> </span>Studio<span class="w"> </span>with<span class="w"> </span>Flutter<span class="w"> </span>plugin
+-<span class="w"> </span>IntelliJ<span class="w"> </span>IDEA<span class="w"> </span>with<span class="w"> </span>Flutter<span class="w"> </span>plugin
+</code></pre>
+</div>
+
+<h3>Clone &amp; Setup</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="nb">cd</span><span class="w"> </span>c:<span class="se">\U</span>sers<span class="se">\e</span>rson<span class="se">\D</span>ownloads<span class="se">\t</span>equila_app<span class="se">\t</span>equila_app
+flutter<span class="w"> </span>pub<span class="w"> </span>get
+flutter<span class="w"> </span>doctor<span class="w">  </span><span class="c1"># Check for any issues</span>
+</code></pre>
+</div>
+
+<h3>Run Development Build</h3>
+
+<div class="codehilite">
+<pre><span></span><code>flutter<span class="w"> </span>run<span class="w"> </span>--dart-define<span class="o">=</span><span class="nv">ADVANCED_DEBUG</span><span class="o">=</span><span class="nb">true</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Project Architecture</h2>
+
+<h3>Folder Structure</h3>
+
+<pre><code>lib/
+├── db/                  # Database layer
+├── models/              # Data models
+├── pages/               # UI screens
+├── services/            # Business logic &amp; API
+├── widgets/             # Reusable components
+└── main.dart           # Entry point
+</code></pre>
+
+<h3>Key Design Principles</h3>
+
+<h4>1. <strong>Single Responsibility</strong></h4>
+
+<p>Each class/file has one clear purpose.</p>
+
+<h4>2. <strong>Separation of Concerns</strong></h4>
+
+<ul>
+<li><strong>UI (Pages)</strong>: Flutter widgets, user interaction</li>
+<li><strong>Logic (Services)</strong>: Business rules, API calls</li>
+<li><strong>Data (Database)</strong>: Storage, queries</li>
+<li><strong>Models</strong>: Data structures</li>
+</ul>
+
+<h4>3. <strong>DRY (Don't Repeat Yourself)</strong></h4>
+
+<p>Reusable widgets and helper methods.</p>
+
+<hr />
+
+<h2>Code Standards</h2>
+
+<h3>Dart Style Guide</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// ✅ Good: Descriptive names</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">BeverageDetailPage</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatefulWidget</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ❌ Bad: Vague names</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">Page2</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatefulWidget</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ Good: Constants in UPPER_CASE</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">API_BASE_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;https://api.example.com&#39;</span><span class="p">;</span>
+
+<span class="c1">// ✅ Good: Private members start with _</span>
+<span class="kt">String</span><span class="w"> </span><span class="n">_privateField</span><span class="p">;</span>
+
+<span class="c1">// ✅ Good: Async/await for readability</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">loadData</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">database</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// ❌ Bad: Nested .then() chains</span>
+<span class="n">database</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">).</span><span class="n">then</span><span class="p">((</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">});</span>
+</code></pre>
+</div>
+
+<h3>Widget Building Best Practices</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// ✅ Good: Extract to methods</span>
+<span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Scaffold</span><span class="p">(</span>
+<span class="w">    </span><span class="nl">appBar:</span><span class="w"> </span><span class="n">_buildAppBar</span><span class="p">(),</span>
+<span class="w">    </span><span class="nl">body:</span><span class="w"> </span><span class="n">_buildBody</span><span class="p">(),</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">Widget</span><span class="w"> </span><span class="n">_buildAppBar</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">AppBar</span><span class="p">(</span><span class="nl">title:</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Title&#39;</span><span class="p">));</span>
+
+<span class="c1">// ✅ Good: Use const when possible</span>
+<span class="k">const</span><span class="w"> </span><span class="n">SizedBox</span><span class="p">(</span><span class="nl">height:</span><span class="w"> </span><span class="m">16</span><span class="p">);</span>
+
+<span class="c1">// ✅ Good: Named parameters for clarity</span>
+<span class="n">_menuItem</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">icon:</span><span class="w"> </span><span class="n">Icons</span><span class="p">.</span><span class="n">scan</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">title:</span><span class="w"> </span><span class="s1">&#39;Scan&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">onTap:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_handleScan</span><span class="p">(),</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<h3>Error Handling</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="n">Future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fetchData</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">ApiService</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Process response</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="kd">on</span><span class="w"> </span><span class="n">DioException</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Network error</span>
+<span class="w">    </span><span class="n">_showError</span><span class="p">(</span><span class="s1">&#39;Network error: </span><span class="si">${</span><span class="n">e</span><span class="p">.</span><span class="n">message</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// General error</span>
+<span class="w">    </span><span class="n">_showError</span><span class="p">(</span><span class="s1">&#39;An error occurred&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Database Management</h2>
+
+<h3>Schema Migrations</h3>
+
+<p>When updating the database schema:</p>
+
+<ol>
+<li><strong>Increment Version Number</strong></li>
+</ol>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// In app_database.dart</span>
+<span class="k">return</span><span class="w"> </span><span class="n">openDatabase</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="nl">version:</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="nl">onCreate:</span><span class="w"> </span><span class="p">...</span>
+</code></pre>
+</div>
+
+<ol start="2">
+<li><strong>Add Migration Logic</strong></li>
+</ol>
+
+<div class="codehilite">
+<pre><span></span><code><span class="nl">onUpgrade:</span><span class="w"> </span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">oldVersion</span><span class="p">,</span><span class="w"> </span><span class="n">newVersion</span><span class="p">)</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldVersion</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">await</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ALTER TABLE beverages ADD COLUMN region TEXT&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ol start="3">
+<li><strong>Test Migration</strong></li>
+</ol>
+
+<ul>
+<li>Install old version on device</li>
+<li>Upgrade to new version</li>
+<li>Verify data integrity</li>
+</ul>
+
+<h3>Adding a New Table</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// 1. Create table in _createDb method</span>
+<span class="kd">await</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">  CREATE TABLE new_table (</span>
+<span class="s1">    id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
+<span class="s1">    name TEXT,</span>
+<span class="s1">    created_at TEXT</span>
+<span class="s1">  )</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">);</span>
+
+<span class="c1">// 2. Add to onUpgrade for existing users</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldVersion</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">4</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;CREATE TABLE new_table ...&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 3. Add helper methods</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getNewTableData</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">database</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;new_table&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">insertIntoNewTable</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">database</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;new_table&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Adding New Features</h2>
+
+<h3>Checklist for New Feature</h3>
+
+<h4>1. <strong>Database Changes</strong> (if needed)</h4>
+
+<ul>
+<li>[ ] Add/modify table schema</li>
+<li>[ ] Increment database version</li>
+<li>[ ] Add migration logic</li>
+<li>[ ] Add helper methods in <code>AppDatabase</code></li>
+</ul>
+
+<h4>2. <strong>Create Model</strong> (if needed)</h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// models/my_feature.dart</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">MyFeature</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">MyFeature</span><span class="p">({</span><span class="k">this</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">name</span><span class="p">});</span>
+
+<span class="w">  </span><span class="kd">factory</span><span class="w"> </span><span class="n">MyFeature</span><span class="p">.</span><span class="n">fromMap</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">MyFeature</span><span class="p">(</span>
+<span class="w">      </span><span class="nl">id:</span><span class="w"> </span><span class="n">map</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+<span class="w">      </span><span class="nl">name:</span><span class="w"> </span><span class="n">map</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">toMap</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s1">&#39;name&#39;</span><span class="o">:</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h4>3. <strong>Create Page</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// pages/my_feature_page.dart</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">MyFeaturePage</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatefulWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MyFeaturePage</span><span class="p">({</span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">});</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">State</span><span class="o">&lt;</span><span class="n">MyFeaturePage</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_MyFeaturePageState</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">_MyFeaturePageState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">State</span><span class="o">&lt;</span><span class="n">MyFeaturePage</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">MyFeature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">_loading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">initState</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">.</span><span class="n">initState</span><span class="p">();</span>
+<span class="w">    </span><span class="n">_loadData</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">Future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_loadData</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">setState</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_loading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">AppDatabase</span><span class="p">.</span><span class="n">instance</span><span class="p">.</span><span class="n">getMyFeatureData</span><span class="p">();</span>
+<span class="w">    </span><span class="n">_items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">map</span><span class="p">((</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">MyFeature</span><span class="p">.</span><span class="n">fromMap</span><span class="p">(</span><span class="n">e</span><span class="p">)).</span><span class="n">toList</span><span class="p">();</span>
+<span class="w">    </span><span class="n">setState</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_loading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Scaffold</span><span class="p">(</span>
+<span class="w">      </span><span class="nl">appBar:</span><span class="w"> </span><span class="n">AppBar</span><span class="p">(</span><span class="nl">title:</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;My Feature&#39;</span><span class="p">)),</span>
+<span class="w">      </span><span class="nl">body:</span><span class="w"> </span><span class="n">_loading</span>
+<span class="w">          </span><span class="o">?</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Center</span><span class="p">(</span><span class="nl">child:</span><span class="w"> </span><span class="n">CircularProgressIndicator</span><span class="p">())</span>
+<span class="w">          </span><span class="o">:</span><span class="w"> </span><span class="n">ListView</span><span class="p">.</span><span class="n">builder</span><span class="p">(</span>
+<span class="w">              </span><span class="nl">itemCount:</span><span class="w"> </span><span class="n">_items</span><span class="p">.</span><span class="n">length</span><span class="p">,</span>
+<span class="w">              </span><span class="nl">itemBuilder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">final</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_items</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">ListTile</span><span class="p">(</span>
+<span class="w">                  </span><span class="nl">title:</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">name</span><span class="p">),</span>
+<span class="w">                </span><span class="p">);</span>
+<span class="w">              </span><span class="p">},</span>
+<span class="w">            </span><span class="p">),</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h4>4. <strong>Add to Navigation</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// In home_page.dart</span>
+<span class="n">_menuItem</span><span class="p">(</span>
+<span class="w">  </span><span class="n">Icons</span><span class="p">.</span><span class="n">new_feature</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;My Feature&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">MyFeaturePage</span><span class="p">()</span>
+<span class="p">),</span>
+</code></pre>
+</div>
+
+<h4>5. <strong>Add Localization</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// In localization_service.dart</span>
+<span class="s1">&#39;es&#39;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="s1">&#39;my_feature_title&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Mi Función&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">},</span>
+<span class="s1">&#39;en&#39;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="s1">&#39;my_feature_title&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;My Feature&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">},</span>
+</code></pre>
+</div>
+
+<h4>6. <strong>Test</strong></h4>
+
+<ul>
+<li>Manual testing on device/emulator</li>
+<li>Edge cases (empty data, errors, etc.)</li>
+<li>Different screen sizes</li>
+</ul>
+
+<hr />
+
+<h2>Testing</h2>
+
+<h3>Manual Testing Checklist</h3>
+
+<ul>
+<li>[ ] Login flow</li>
+<li>[ ] Each menu item navigates correctly</li>
+<li>[ ] Scanner works with sample barcodes</li>
+<li>[ ] Add to Cava functionality</li>
+<li>[ ] Review submission</li>
+<li>[ ] Chat message sending</li>
+<li>[ ] Language switching</li>
+<li>[ ] Logout</li>
+</ul>
+
+<h3>Test Data</h3>
+
+<h4>Sample Barcodes</h4>
+
+<pre><code>7501000123456 - Tequila Blanco Tradicional
+7502000654321 - Mezcal Joven Artesanal
+</code></pre>
+
+<h4>Test Accounts</h4>
+
+<pre><code>Email: admin01@3ware.mx
+Password: Admin*246
+</code></pre>
+
+<h3>Device Testing Matrix</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Device</th>
+  <th>Android Version</th>
+  <th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Pixel 6</td>
+  <td>13</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td>Samsung Galaxy S21</td>
+  <td>12</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td>Emulator</td>
+  <td>11</td>
+  <td>✅</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>Building &amp; Deployment</h2>
+
+<h3>Android APK</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Debug build</span>
+flutter<span class="w"> </span>build<span class="w"> </span>apk<span class="w"> </span>--debug
+
+<span class="c1"># Release build</span>
+flutter<span class="w"> </span>build<span class="w"> </span>apk<span class="w"> </span>--release
+
+<span class="c1"># Output: build/app/outputs/flutter-apk/app-release.apk</span>
+</code></pre>
+</div>
+
+<h3>Android App Bundle (for Play Store)</h3>
+
+<div class="codehilite">
+<pre><span></span><code>flutter<span class="w"> </span>build<span class="w"> </span>appbundle<span class="w"> </span>--release
+
+<span class="c1"># Output: build/app/outputs/bundle/release/app-release.aab</span>
+</code></pre>
+</div>
+
+<h3>iOS (macOS required)</h3>
+
+<div class="codehilite">
+<pre><span></span><code>flutter<span class="w"> </span>build<span class="w"> </span>ios<span class="w"> </span>--release
+
+<span class="c1"># Then open in Xcode for signing and upload</span>
+open<span class="w"> </span>ios/Runner.xcworkspace
+</code></pre>
+</div>
+
+<h3>Version Management</h3>
+
+<p>Update version in <code>pubspec.yaml</code>:</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0+1</span><span class="w">  </span><span class="c1"># version+build</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>API Integration Guide</h2>
+
+<h3>Setting Up API Service</h3>
+
+<h4>1. <strong>Configure Base URL</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// In services/prefs.dart or settings</span>
+<span class="kd">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">DEFAULT_API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;https://api.yourserver.com&#39;</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<h4>2. <strong>Create API Endpoint Methods</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// In services/api_service.dart</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">ApiService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Beverage</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">fetchBeverages</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="kd">get</span><span class="p">(</span><span class="s1">&#39;/beverages&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">response</span><span class="p">.</span><span class="n">data</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">map</span><span class="p">((</span><span class="n">json</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Beverage</span><span class="p">.</span><span class="n">fromJson</span><span class="p">(</span><span class="n">json</span><span class="p">)).</span><span class="n">toList</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="n">Future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">syncScans</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">scans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">AppDatabase</span><span class="p">.</span><span class="n">instance</span><span class="p">.</span><span class="n">getUnsynced</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">await</span><span class="w"> </span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/scans/batch&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">data:</span><span class="w"> </span><span class="n">scans</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Mark as synced</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h4>3. <strong>Authentication</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// services/api_client.dart already handles Bearer token</span>
+<span class="n">dio</span><span class="p">.</span><span class="n">interceptors</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">InterceptorsWrapper</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">onRequest:</span><span class="w"> </span><span class="p">(</span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="n">handler</span><span class="p">)</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">options</span><span class="p">.</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;noAuth&#39;</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">final</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">Prefs</span><span class="p">.</span><span class="n">getApiToken</span><span class="p">();</span>
+<span class="w">      </span><span class="n">options</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Bearer </span><span class="si">$</span><span class="n">token</span><span class="s1">&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">handler</span><span class="p">.</span><span class="n">next</span><span class="p">(</span><span class="n">options</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">));</span>
+</code></pre>
+</div>
+
+<h3>Real-time Features (WebSocket)</h3>
+
+<p>For chat and live updates:</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// services/websocket_service.dart</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:web_socket_channel/web_socket_channel.dart&#39;</span><span class="p">;</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">WebSocketService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">late</span><span class="w"> </span><span class="n">WebSocketChannel</span><span class="w"> </span><span class="n">_channel</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">connect</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">_channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebSocketChannel</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span>
+<span class="w">      </span><span class="n">Uri</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;wss://api.yourserver.com/ws&#39;</span><span class="p">),</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">_channel</span><span class="p">.</span><span class="n">stream</span><span class="p">.</span><span class="n">listen</span><span class="p">((</span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Handle incoming messages</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">sendMessage</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">_channel</span><span class="p">.</span><span class="n">sink</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">close</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">_channel</span><span class="p">.</span><span class="n">sink</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>Data Sync Strategy</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="n">Future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">syncData</span><span class="p">()</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 1. Check connectivity</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">hasConnection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">_checkConnection</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">hasConnection</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 2. Upload local changes</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">_uploadScans</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">_uploadReviews</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// 3. Download updates</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">_downloadBeverages</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">_downloadEvents</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">_downloadAds</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// 4. Mark sync time</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">Prefs</span><span class="p">.</span><span class="n">setLastSync</span><span class="p">(</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Performance Optimization</h2>
+
+<h3>Database Queries</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// ✅ Good: Use indexes</span>
+<span class="n">CREATE</span><span class="w"> </span><span class="n">INDEX</span><span class="w"> </span><span class="n">idx_beverages_barcode</span><span class="w"> </span><span class="n">ON</span><span class="w"> </span><span class="n">beverages</span><span class="p">(</span><span class="n">barcode</span><span class="p">);</span>
+
+<span class="c1">// ✅ Good: Limit results</span>
+<span class="n">db</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">limit:</span><span class="w"> </span><span class="m">50</span><span class="p">);</span>
+
+<span class="c1">// ✅ Good: Use transactions for multiple writes</span>
+<span class="kd">await</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">transaction</span><span class="p">((</span><span class="n">txn</span><span class="p">)</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">txn</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;table1&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data1</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">await</span><span class="w"> </span><span class="n">txn</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;table2&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data2</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h3>UI Performance</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// ✅ Good: Use ListView.builder for long lists</span>
+<span class="n">ListView</span><span class="p">.</span><span class="n">builder</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">itemCount:</span><span class="w"> </span><span class="n">items</span><span class="p">.</span><span class="n">length</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">itemBuilder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">ItemWidget</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="n">index</span><span class="p">]),</span>
+<span class="p">);</span>
+
+<span class="c1">// ❌ Bad: Creating all widgets at once</span>
+<span class="n">ListView</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">children:</span><span class="w"> </span><span class="n">items</span><span class="p">.</span><span class="n">map</span><span class="p">((</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">ItemWidget</span><span class="p">(</span><span class="n">item</span><span class="p">)).</span><span class="n">toList</span><span class="p">(),</span>
+<span class="p">);</span>
+
+<span class="c1">// ✅ Good: Cache complex calculations</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">expensiveValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">useMemoized</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">calculateValue</span><span class="p">());</span>
+
+<span class="c1">// ✅ Good: Debounce search</span>
+<span class="n">Timer</span><span class="o">?</span><span class="w"> </span><span class="n">_debounce</span><span class="p">;</span>
+<span class="n">_onSearchChanged</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">_debounce</span><span class="o">?</span><span class="p">.</span><span class="n">cancel</span><span class="p">();</span>
+<span class="w">  </span><span class="n">_debounce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Timer</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span><span class="w"> </span><span class="m">500</span><span class="p">),</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_search</span><span class="p">(</span><span class="n">query</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Debugging Tips</h2>
+
+<h3>Enable Logging</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// In services/api_client.dart</span>
+<span class="n">dio</span><span class="p">.</span><span class="n">interceptors</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">LogInterceptor</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">request:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">requestBody:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">responseBody:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="p">));</span>
+</code></pre>
+</div>
+
+<h3>Database Inspection</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Print all tables</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">tables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">rawQuery</span><span class="p">(</span>
+<span class="w">  </span><span class="s2">&quot;SELECT name FROM sqlite_master WHERE type=&#39;table&#39;&quot;</span>
+<span class="p">);</span>
+<span class="n">print</span><span class="p">(</span><span class="n">tables</span><span class="p">);</span>
+
+<span class="c1">// View table contents</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;beverages&#39;</span><span class="p">);</span>
+<span class="n">print</span><span class="p">(</span><span class="n">rows</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h3>Common Issues</h3>
+
+<p><strong>Issue</strong>: Hot reload not working
+<strong>Fix</strong>: Use hot restart (flutter run -d <device>)</p>
+
+<p><strong>Issue</strong>: Database not updating
+<strong>Fix</strong>: Uninstall app and reinstall to recreate database</p>
+
+<p><strong>Issue</strong>: Build errors after adding package
+<strong>Fix</strong>: <code>flutter clean &amp;&amp; flutter pub get</code></p>
+
+<hr />
+
+<h2>Git Workflow</h2>
+
+<h3>Branch Strategy</h3>
+
+<div class="codehilite">
+<pre><span></span><code>main<span class="w">          </span><span class="c1"># Production-ready code</span>
+develop<span class="w">       </span><span class="c1"># Development branch</span>
+feature/*<span class="w">     </span><span class="c1"># New features</span>
+bugfix/*<span class="w">      </span><span class="c1"># Bug fixes</span>
+</code></pre>
+</div>
+
+<h3>Commit Messages</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Good examples</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: Add reviews page with rating system&quot;</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: Scanner dialog not closing properly&quot;</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;refactor: Extract database helpers to separate methods&quot;</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;docs: Update API integration guide&quot;</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Resources</h2>
+
+<h3>Official Documentation</h3>
+
+<ul>
+<li><a href="https://flutter.dev/docs">Flutter Docs</a></li>
+<li><a href="https://dart.dev/guides/language/language-tour">Dart Language Tour</a></li>
+<li><a href="https://pub.dev/packages/sqflite">sqflite Package</a></li>
+</ul>
+
+<h3>Useful Packages</h3>
+
+<ul>
+<li><code>dio</code> - HTTP client</li>
+<li><code>mobile_scanner</code> - Barcode scanning</li>
+<li><code>geolocator</code> - Location services</li>
+<li><code>shared_preferences</code> - Key-value storage</li>
+</ul>
+
+<hr />
+
+<p><em>Happy Coding! 🚀</em></p>
+
+</body>
+</html>

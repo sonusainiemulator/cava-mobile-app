@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TECHNICAL DOCUMENTATION</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            color: #333;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; margin-top: 30px; }
+        h3 { color: #34495e; margin-top: 25px; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        pre code {
+            background: none;
+            color: #ecf0f1;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin-left: 0;
+            color: #666;
+            font-style: italic;
+        }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        @media print {
+            body { padding: 20px; }
+            h1, h2, h3 { page-break-after: avoid; }
+            pre, blockquote { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<h1>Tequila App - Technical Documentation</h1>
+
+<h2>Table of Contents</h2>
+
+<ol>
+<li><a href="#project-overview">Project Overview</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#database-schema">Database Schema</a></li>
+<li><a href="#installation-guide">Installation Guide</a></li>
+<li><a href="#user-guide">User Guide</a></li>
+<li><a href="#api-integration">API Integration</a></li>
+<li><a href="#future-enhancements">Future Enhancements</a></li>
+</ol>
+
+<hr />
+
+<h2>Project Overview</h2>
+
+<p><strong>Tequila App</strong> is a comprehensive mobile application built with Flutter for managing tequila and mezcal collections, discovering products, reading reviews, attending events, and connecting with other enthusiasts.</p>
+
+<h3>Technology Stack</h3>
+
+<ul>
+<li><strong>Framework</strong>: Flutter 3.x</li>
+<li><strong>Language</strong>: Dart</li>
+<li><strong>Database</strong>: SQLite (via sqflite package)</li>
+<li><strong>State Management</strong>: StatefulWidget</li>
+<li><strong>HTTP Client</strong>: Dio</li>
+<li><strong>Barcode Scanning</strong>: mobile_scanner</li>
+<li><strong>Location Services</strong>: geolocator</li>
+</ul>
+
+<h3>Project Structure</h3>
+
+<pre><code>lib/
+├── db/
+│   └── app_database.dart          # Database singleton with schema
+├── models/
+│   ├── ad.dart                     # Ad model
+│   ├── review.dart                 # Review model
+│   ├── event.dart                  # Event model
+│   └── chat.dart                   # Chat &amp; ChatMessage models
+├── pages/
+│   ├── login_page.dart             # Authentication
+│   ├── home_page.dart              # Main menu with grid layout
+│   ├── scanner_page.dart           # Barcode scanner
+│   ├── cava_page.dart              # Personal collection
+│   ├── reviews_page.dart           # Reviews listing/creation
+│   ├── events_page.dart            # Events listing
+│   ├── chat_list_page.dart         # Chat conversations
+│   ├── chat_page.dart              # Individual chat
+│   └── info_page.dart              # Tequila/Mezcal info
+├── services/
+│   ├── api_service.dart            # HTTP wrapper
+│   ├── login_service.dart          # Authentication service
+│   ├── localization_service.dart   # i18n support
+│   └── location_service.dart       # GPS services
+├── widgets/
+│   └── ads_banner.dart             # Rotating ads banner
+└── main.dart                       # App entry point
+</code></pre>
+
+<hr />
+
+<h2>Features</h2>
+
+<h3>1. <strong>Menu &amp; Navigation</strong> ✅</h3>
+
+<ul>
+<li><strong>Rotating Ads Banner</strong>: Location-based promotional banners displayed at the top of the home screen</li>
+<li><strong>Grid Menu Layout</strong>: Easy access to all app sections with icons</li>
+<li><strong>Multi-language Support</strong>: Spanish (es) and English (en)</li>
+</ul>
+
+<h3>2. <strong>Scan</strong> ✅</h3>
+
+<ul>
+<li><strong>Barcode Scanner</strong>: Real-time QR/barcode scanning using camera</li>
+<li><strong>Local Database Search</strong>: Fast lookup of beverages from local SQLite</li>
+<li><strong>Scan Logging</strong>: Records all scans with GPS coordinates and timestamp</li>
+<li><strong>Quick Actions</strong>: Add scanned items to personal Cava instantly</li>
+</ul>
+
+<h3>3. <strong>Cava (Personal Collection)</strong> ✅</h3>
+
+<ul>
+<li><strong>Catalog View</strong>: Browse all available beverages from system</li>
+<li><strong>My Cava</strong>: Personal collection tab</li>
+<li><strong>Add to Collection</strong>: One-tap add from catalog or scanner</li>
+<li><strong>Detailed Info</strong>: Name, brand, presentation, alcohol content</li>
+</ul>
+
+<h3>4. <strong>Reviews</strong> ✅</h3>
+
+<ul>
+<li><strong>View Reviews</strong>: List of approved user reviews with ratings</li>
+<li><strong>Write Reviews</strong>: Submit reviews with username, comment, and 1-5 star rating</li>
+<li><strong>Approval System</strong>: Reviews marked as approved/pending (placeholder for admin moderation)</li>
+<li><strong>Sorting</strong>: Reviews displayed by date (newest first)</li>
+</ul>
+
+<h3>5. <strong>Events</strong> ✅</h3>
+
+<ul>
+<li><strong>Location-Based</strong>: Events filtered by user location (mocked)</li>
+<li><strong>Event Details</strong>: Title, date, location, description, image</li>
+<li><strong>Card Layout</strong>: Modern card-based UI with event thumbnails</li>
+</ul>
+
+<h3>6. <strong>Chat</strong> ✅</h3>
+
+<ul>
+<li><strong>User-to-User Messaging</strong>: Send text messages between users</li>
+<li><strong>Chat List</strong>: View all active conversations</li>
+<li><strong>Message History</strong>: Persistent chat storage</li>
+<li><strong>New Chat</strong>: Initiate conversations via username/email</li>
+<li><strong>Image Support</strong>: Placeholder for image sharing (future)</li>
+</ul>
+
+<h3>7. <strong>Tequila &amp; Mezcal Info</strong> ✅</h3>
+
+<ul>
+<li><strong>Educational Content</strong>: Dedicated pages for tequila and mezcal</li>
+<li><strong>Rich Media</strong>: Support for images, text, and video (placeholders)</li>
+<li><strong>Scrollable Content</strong>: Long-form content support</li>
+</ul>
+
+<h3>8. <strong>Authentication</strong> ✅</h3>
+
+<ul>
+<li><strong>Email/Password Login</strong>: Standard authentication</li>
+<li><strong>Token-Based Auth</strong>: Bearer token support for API calls</li>
+<li><strong>Session Management</strong>: Persistent login state</li>
+</ul>
+
+<hr />
+
+<h2>Architecture</h2>
+
+<h3>Design Patterns</h3>
+
+<h4>1. <strong>Singleton Pattern</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">AppDatabase</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">AppDatabase</span><span class="p">.</span><span class="n">_internal</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AppDatabase</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AppDatabase</span><span class="p">.</span><span class="n">_internal</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ul>
+<li>Used for database access to ensure single connection pool</li>
+</ul>
+
+<h4>2. <strong>Repository Pattern</strong></h4>
+
+<ul>
+<li>Database methods act as repositories for data access</li>
+<li>Clean separation between UI and data layer</li>
+</ul>
+
+<h4>3. <strong>Service Layer</strong></h4>
+
+<ul>
+<li><code>ApiService</code>, <code>LoginService</code>, <code>LocationService</code> encapsulate business logic</li>
+<li>Reusable across multiple pages</li>
+</ul>
+
+<h3>State Management</h3>
+
+<ul>
+<li><strong>StatefulWidget</strong>: Primary state management approach</li>
+<li><strong>ValueNotifier</strong>: Used for locale changes in <code>LocalizationService</code></li>
+<li><strong>FutureBuilder</strong>: For async data loading in UI</li>
+</ul>
+
+<h3>Navigation</h3>
+
+<ul>
+<li><strong>Material PageRoute</strong>: Standard push/pop navigation</li>
+<li><strong>Named Routes</strong>: Not currently used (can be added for deep linking)</li>
+</ul>
+
+<hr />
+
+<h2>Database Schema</h2>
+
+<h3>Database Version: 2</h3>
+
+<h4>Tables</h4>
+
+<h5>1. <strong>beverages</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">beverages</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">barcode</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">brand</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">presentation</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">alcohol_degrees</span><span class="w"> </span><span class="nb">REAL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">price</span><span class="w"> </span><span class="nb">REAL</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: Master catalog of all tequila/mezcal products</p>
+
+<h5>2. <strong>scans</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">scans</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">barcode</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">username</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">latitude</span><span class="w"> </span><span class="nb">REAL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">longitude</span><span class="w"> </span><span class="nb">REAL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">timestamp</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">synced</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: Log all barcode scans with location and time</p>
+
+<h5>3. <strong>ads</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ads</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">title</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">image_path</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="k">location</span><span class="w"> </span><span class="nb">TEXT</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: Store promotional banners (location-filtered)</p>
+
+<h5>4. <strong>reviews</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">reviews</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">username</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">content</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">rating</span><span class="w"> </span><span class="nb">REAL</span><span class="p">,</span>
+<span class="w">  </span><span class="nb">date</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">approved</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: User-generated reviews with approval status</p>
+
+<h5>5. <strong>events</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">title</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="nb">date</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="k">location</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">image_path</span><span class="w"> </span><span class="nb">TEXT</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: Tasting events and community gatherings</p>
+
+<h5>6. <strong>chats</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">chats</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">counterpart</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">last_message</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">last_message_time</span><span class="w"> </span><span class="nb">TEXT</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: Chat conversation metadata</p>
+
+<h5>7. <strong>chat_messages</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">chat_messages</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chat_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sender</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">content</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="k">timestamp</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">is_image</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: Individual chat messages</p>
+
+<h5>8. <strong>my_cava</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">my_cava</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">barcode</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">notes</span><span class="w"> </span><span class="nb">TEXT</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<p><strong>Purpose</strong>: User's personal collection</p>
+
+<h3>Database Helper Methods</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Beverages</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;?&gt;</span><span class="w"> </span><span class="n">getBeverageByBarcode</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">barcode</span><span class="p">)</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">listBeverages</span><span class="p">()</span>
+
+<span class="c1">// Scans</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">insertScan</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">scan</span><span class="p">)</span>
+
+<span class="c1">// Ads</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getAds</span><span class="p">()</span>
+
+<span class="c1">// Reviews</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getReviews</span><span class="p">()</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">insertReview</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">review</span><span class="p">)</span>
+
+<span class="c1">// Events</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getEvents</span><span class="p">()</span>
+
+<span class="c1">// Chats</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getChats</span><span class="p">()</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createChat</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">counterpart</span><span class="p">)</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getChatMessages</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">chatId</span><span class="p">)</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">insertChatMessage</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span>
+
+<span class="c1">// Cava</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">getMyCava</span><span class="p">()</span>
+<span class="n">Future</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">addToCava</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">barcode</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Installation Guide</h2>
+
+<h3>Prerequisites</h3>
+
+<ul>
+<li>Flutter SDK 3.x or higher</li>
+<li>Android Studio / VS Code</li>
+<li>Android SDK (for Android development)</li>
+<li>Xcode (for iOS development, macOS only)</li>
+</ul>
+
+<h3>Steps</h3>
+
+<ol>
+<li><strong>Clone the Repository</strong></li>
+</ol>
+
+<div class="codehilite">
+<pre><span></span><code><span class="nb">cd</span><span class="w"> </span>c:<span class="se">\U</span>sers<span class="se">\e</span>rson<span class="se">\D</span>ownloads<span class="se">\t</span>equila_app<span class="se">\t</span>equila_app
+</code></pre>
+</div>
+
+<ol start="2">
+<li><strong>Install Dependencies</strong></li>
+</ol>
+
+<div class="codehilite">
+<pre><span></span><code>flutter<span class="w"> </span>pub<span class="w"> </span>get
+</code></pre>
+</div>
+
+<ol start="3">
+<li><strong>Configure API Endpoints</strong> (Optional)</li>
+</ol>
+
+<ul>
+<li>Update base URL in Settings page or <code>services/api_service.dart</code></li>
+</ul>
+
+<ol start="4">
+<li><strong>Run the App</strong></li>
+</ol>
+
+<div class="codehilite">
+<pre><span></span><code>flutter<span class="w"> </span>run
+</code></pre>
+</div>
+
+<ol start="5">
+<li><strong>Build for Production</strong></li>
+</ol>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Android APK</span>
+flutter<span class="w"> </span>build<span class="w"> </span>apk<span class="w"> </span>--release
+
+<span class="c1"># Android App Bundle</span>
+flutter<span class="w"> </span>build<span class="w"> </span>appbundle<span class="w"> </span>--release
+
+<span class="c1"># iOS</span>
+flutter<span class="w"> </span>build<span class="w"> </span>ios<span class="w"> </span>--release
+</code></pre>
+</div>
+
+<hr />
+
+<h2>User Guide</h2>
+
+<h3>Getting Started</h3>
+
+<h4>1. <strong>Login</strong></h4>
+
+<ul>
+<li>Enter your email and password</li>
+<li>Or use Advanced Debug mode for quick testing</li>
+<li>Configure API endpoints via Settings if needed</li>
+</ul>
+
+<h4>2. <strong>Home Screen</strong></h4>
+
+<ul>
+<li>View rotating promotional banners at the top</li>
+<li>Access all features via the grid menu</li>
+</ul>
+
+<h3>Using Features</h3>
+
+<h4><strong>Scanning Products</strong></h4>
+
+<ol>
+<li>Tap <strong>SCAN</strong> from the home menu</li>
+<li>Point camera at barcode</li>
+<li>View product details in dialog</li>
+<li>Tap <strong>Add to Cava</strong> to save</li>
+</ol>
+
+<h4><strong>Managing Your Cava</strong></h4>
+
+<ol>
+<li>Tap <strong>CAVA</strong> from the home menu</li>
+<li><strong>Catalog Tab</strong>: Browse all beverages, tap + to add</li>
+<li><strong>My Cava Tab</strong>: View your saved collection</li>
+</ol>
+
+<h4><strong>Reading &amp; Writing Reviews</strong></h4>
+
+<ol>
+<li>Tap <strong>Reviews</strong> from the home menu</li>
+<li>Browse existing reviews</li>
+<li>Tap <strong>+</strong> button to add your review</li>
+<li>Enter username, comment, rating (1-5 stars)</li>
+<li>Submit (approval pending)</li>
+</ol>
+
+<h4><strong>Viewing Events</strong></h4>
+
+<ol>
+<li>Tap <strong>Events</strong> from the home menu</li>
+<li>View upcoming tastings and gatherings</li>
+<li>Events are filtered by location</li>
+</ol>
+
+<h4><strong>Chatting with Users</strong></h4>
+
+<ol>
+<li>Tap <strong>Chat</strong> from the home menu</li>
+<li>Tap <strong>+</strong> to start new chat</li>
+<li>Enter username/email of recipient</li>
+<li>Send text messages</li>
+<li>Messages are saved locally</li>
+</ol>
+
+<h4><strong>Learning About Products</strong></h4>
+
+<ol>
+<li>Tap <strong>Tequila</strong> or <strong>Mezcal</strong> from home menu</li>
+<li>Read educational content</li>
+<li>Watch video tutorials (placeholder)</li>
+</ol>
+
+<hr />
+
+<h2>API Integration</h2>
+
+<h3>Current Status</h3>
+
+<p>The app is designed to work with a backend API but currently uses local SQLite for all data. The following endpoints are expected:</p>
+
+<h3>Authentication</h3>
+
+<pre><code>POST /api/login
+Body: { email, password }
+Response: { token, user }
+</code></pre>
+
+<h3>Beverages</h3>
+
+<pre><code>GET /api/beverages
+GET /api/beverages/{barcode}
+</code></pre>
+
+<h3>Ads</h3>
+
+<pre><code>GET /api/ads?location={location}
+</code></pre>
+
+<h3>Events</h3>
+
+<pre><code>GET /api/events?location={location}
+</code></pre>
+
+<h3>Reviews</h3>
+
+<pre><code>GET /api/reviews
+POST /api/reviews
+Body: { username, content, rating, beverage_id }
+</code></pre>
+
+<h3>Chats (Future - WebSocket/Real-time)</h3>
+
+<pre><code>WS /api/chat
+POST /api/chat/messages
+GET /api/chat/conversations
+</code></pre>
+
+<h3>Syncing Scans</h3>
+
+<pre><code>POST /api/scans
+Body: { barcode, latitude, longitude, timestamp }
+</code></pre>
+
+<h3>Configuration</h3>
+
+<p>Update API base URL in <code>services/prefs.dart</code> or via Settings page:
+- Default: <code>https://api.example.com</code></p>
+
+<hr />
+
+<h2>Future Enhancements</h2>
+
+<h3>Phase 1: Backend Integration</h3>
+
+<ul>
+<li>[ ] Connect to real API for beverages catalog</li>
+<li>[ ] Sync scans to server</li>
+<li>[ ] Real-time chat via WebSocket</li>
+<li>[ ] Cloud-based review moderation</li>
+</ul>
+
+<h3>Phase 2: Enhanced Features</h3>
+
+<ul>
+<li>[ ] Push notifications for events</li>
+<li>[ ] Social sharing (reviews, favorites)</li>
+<li>[ ] Advanced search and filters</li>
+<li>[ ] QR code generation for sharing</li>
+</ul>
+
+<h3>Phase 3: Gamification</h3>
+
+<ul>
+<li>[ ] Achievement system</li>
+<li>[ ] Leaderboards</li>
+<li>[ ] Collection badges</li>
+<li>[ ] Tasting challenges</li>
+</ul>
+
+<h3>Phase 4: E-Commerce</h3>
+
+<ul>
+<li>[ ] In-app purchases</li>
+<li>[ ] Product recommendations</li>
+<li>[ ] Affiliate links</li>
+<li>[ ] Event ticket sales</li>
+</ul>
+
+<hr />
+
+<h2>Support &amp; Contact</h2>
+
+<p>For technical support or questions:
+- <strong>Developer</strong>: Tequila App Team
+- <strong>Version</strong>: 1.0.0
+- <strong>Last Updated</strong>: January 2026</p>
+
+<hr />
+
+<p><em>This documentation is subject to updates as new features are added.</em></p>
+
+</body>
+</html>

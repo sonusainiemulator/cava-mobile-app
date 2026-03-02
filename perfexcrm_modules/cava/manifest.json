@@ -1,0 +1,8 @@
+{
+  "name": "Cava",
+  "description": "Catálogo maestro de vinos (PNG) y cava personal por usuario (staff). Admin gestiona el catálogo, usuarios seleccionan vinos.",
+  "author": "EREISE",
+  "version": "1.0",
+  "requires": "3.3",
+  "module_name": "cava"
+}
